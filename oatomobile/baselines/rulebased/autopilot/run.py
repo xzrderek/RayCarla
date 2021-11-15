@@ -49,12 +49,15 @@ flags.DEFINE_list(
         "bird_view_camera_rgb",
         "front_camera_rgb",
         "lidar",
+        "is_at_traffic_light",
+        "traffic_light_state",
+        "velocity",
     ],
     help="The list of recorded sensors.",
 )
 flags.DEFINE_integer(
     name="max_episode_steps",
-    default=None,
+    default=1000,
     help="The number of steps in the simulator.",
 )
 flags.DEFINE_string(
@@ -64,7 +67,7 @@ flags.DEFINE_string(
 )
 flags.DEFINE_bool(
     name="render",
-    default=False,
+    default=True,
     help="If True it spawn the `PyGame` display.",
 )
 
@@ -95,7 +98,7 @@ def main(argv):
       )
     if output_dir is not None:
       env = oatomobile.SaveToDiskWrapper(env, output_dir=output_dir)
-    env = oatomobile.MonitorWrapper(env, output_fname="tmp/yoo.gif")
+    # env = oatomobile.MonitorWrapper(env, output_fname="tmp/yoo.gif")
 
     # Runs the environment loop.
     oatomobile.EnvironmentLoop(
@@ -113,4 +116,7 @@ def main(argv):
 
 
 if __name__ == "__main__":
+  flags.mark_flag_as_required("max_episode_steps")
+  flags.mark_flag_as_required("output_dir")
+
   app.run(main)

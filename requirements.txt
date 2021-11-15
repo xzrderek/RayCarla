@@ -1,0 +1,13 @@
+absl-py
+numpy
+gym
+imageio
+tqdm
+pandas
+matplotlib
+pygame
+transforms3d
+scikit-image
+torch
+wget
+tensorboard
