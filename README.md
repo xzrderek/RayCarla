@@ -1,10 +1,10 @@
-# RayCarla: A project of using Carla on Ray for research in Reinforcement Learning and Imitation Learning for Autonomous Driving.
+# RayCarla: Carla on Ray for Autonomous Driving Research.
 
   **[Overview](#overview)**
 | **[Development](#Development)**
 | **[Experiments](#Experiments)**
 
-RayCarla is a project of using Carla on Ray for research in Reinforcement Learning and Imitation Learning for Autonomous Driving.
+RayCarla is a project of using Carla on Ray for research in Reinforcement Learning, Imitation Learning and Interpretability for Autonomous Driving.
 
 ## Overview
 
