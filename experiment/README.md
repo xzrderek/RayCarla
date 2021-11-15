@@ -1,5 +1,5 @@
 # Quick start
-Please follow experiments.ipynb,
+Please follow experiment/experiments.ipynb,
 
 ------------
 # Old Readme
@@ -14,13 +14,13 @@ source .env
 ```
 python oatomobile/baselines/rulebased/autopilot/run.py -output_dir=data/raw/train --town=Town04 --max_episode_steps=1000
 
-python experiments/postprocess.py --input_dir=data/raw/train --output_dir=data/dataset/train
+python experiment/postprocess.py --input_dir=data/raw/train --output_dir=data/dataset/train
 ```
 ### Validation Dataset
 ```
 python oatomobile/baselines/rulebased/autopilot/run.py -output_dir=data/raw/val --town=Town03 --max_episode_steps=500
 
-python experiments/postprocess.py --input_dir=data/raw/val --output_dir=data/dataset/val
+python experiment/postprocess.py --input_dir=data/raw/val --output_dir=data/dataset/val
 ```
 
 ## Train

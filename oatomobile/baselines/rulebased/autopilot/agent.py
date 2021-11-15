@@ -26,6 +26,7 @@ import carla
 import oatomobile
 from oatomobile.simulators.carla import defaults
 from oatomobile.utils import carla as cutil
+from oatomobile.envs import CARLAEnv
 
 try:
   from agents.navigation.local_planner import \
@@ -45,7 +46,7 @@ class AutopilotAgent(oatomobile.Agent):
   `carla.PythonAPI.agents.navigation.basic_agent.BasicAgent`"""
 
   def __init__(self,
-               environment: oatomobile.envs.CARLAEnv,
+               environment: CARLAEnv,
                *,
                proximity_tlight_threshold: float = 5.0,
                proximity_vehicle_threshold: float = 10.0,

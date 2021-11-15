@@ -1,0 +1,72 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: autopilot",
+            "type": "python",
+            "request": "launch",
+            "program": "oatomobile/baselines/rulebased/autopilot/run.py",
+            "args": ["--output_dir=experiment/data/raw", "--town=Town04", "--max_episode_steps=1000"],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Python: postprocess",
+            "type": "python",
+            "request": "launch",
+            "program": "postprocess.py",
+            "args": ["--input_dir=experiment/data/raw/train", "--output_dir=experiment/data/dataset/train"],
+            "console": "integratedTerminal"
+        },        
+        {
+            "name": "Python: autopilot-val",
+            "type": "python",
+            "request": "launch",
+            "program": "oatomobile/baselines/rulebased/autopilot/run.py",
+            "args": ["--output_dir=experiment/data/raw", "--town=Town04", "--max_episode_steps=300"],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Python: postprocess-val",
+            "type": "python",
+            "request": "launch",
+            "program": "postprocess.py",
+            "args": ["--input_dir=experiment/data/raw/val", "--output_dir=experiment/data/dataset/val"],
+            "console": "integratedTerminal"
+        },        
+        {
+            "name": "Python: dim train",
+            "type": "python",
+            "request": "launch",
+            "program": "oatomobile/baselines/torch/dim/train.py",
+            "args": ["--model=experiment/data/dataset/", "--output_dir=experiment/data/model", "--num_epochs=3"],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Python: dim infer",
+            "type": "python",
+            "request": "launch",
+            "program": "experiment/dim.py",
+            "args": ["--model=experiment/data/model/dim/ckpts/model-640.pt", "--town=Town03"],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Python: cil train",
+            "type": "python",
+            "request": "launch",
+            "program": "oatomobile/baselines/torch/cil/train.py",
+            "args": ["--dataset_dir=experiment/data/dataset", "--output_dir=experiment/data/model", "--num_epochs=3"],
+            "console": "integratedTerminal"
+        },
+        
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal"
+        }
+    ]
+}
