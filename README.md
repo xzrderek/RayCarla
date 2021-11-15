@@ -126,4 +126,4 @@ if __name__ == "__main__":
     echo "deb [arch=amd64] https://storage.googleapis.com/bazel-apt stable jdk1.8" | sudo tee /etc/apt/sources.list.d/bazel.list
     sudo apt update && sudo apt install bazel
     ```
-10. Follow experiment/experiments.ipynb notebook to enjoy!
+10. Follow [experiment/experiments.ipynb](https://github.com/xzrderek/RayCarla/blob/main/experiment/experiments.ipynb) notebook to enjoy!
