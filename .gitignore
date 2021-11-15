@@ -163,8 +163,6 @@ bazel-oatomobile
 bazel-testlogs
 bazel-out
 
-# result
-dataset/
-model/
+# data
 data/
-data-old/
+data-oatml/

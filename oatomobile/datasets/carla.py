@@ -86,7 +86,7 @@ class CARLADataset(Dataset):
       output_dir: The absolute path where the prepared dataset is stored.
     """
     # Creates the necessary output directory.
-    os.makedirs(output_dir, exist_ok=True)
+    os.makedirs(output_dir, exist_ok=False) # Exists then exit
 
     # Temporary zip file to use.
     zfname = os.path.join(output_dir, "{}.zip".format(self.id))

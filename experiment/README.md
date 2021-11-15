@@ -1,5 +1,5 @@
 # Quick start
-Please follow experiment/experiments.ipynb,
+Please follow raycarla.ipynb,
 
 ------------
 # Old Readme

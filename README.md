@@ -1,76 +1,19 @@
-# RayCarla: Carla on Ray for Autonomous Driving Research.
+# RayCarla the Large Scale Autonomous Driving Research Platform.
 
-  **[Overview](#overview)**
+  **[QuickStart](#QuickStart)**
 | **[Development](#Development)**
-| **[Experiments](#Experiments)**
+| **[Results](#Results)**
 
-RayCarla is a project of using Carla on Ray for research in Reinforcement Learning, Imitation Learning and Interpretability for Autonomous Driving.
+RayCarla is a **large scale** autonomous driving research platform. 
+* Carla simulator.
+* Carla on Ray to support distributive simulation (WIP).
+* Imitative Learning on Ray to support distributive deep learning.
+* Reinforcement Learning on Ray (WIP).
+* Autonomous Driving Interpretability (WIP).
 
-## Overview
+## QuickStart
 
-If you just want to get started using RayCarla quickly, the first thing to know about the framework is that we wrap [CARLA] towns and scenarios in OpenAI [gym]s:
-
-```python
-import torch
-import oatomobile.baselines.torch
-import oatomobile
-from oatomobile.envs import CARLAEnv
-
-from absl import app
-from absl import flags
-from absl import logging
-
-logging.set_verbosity(logging.DEBUG)
-FLAGS = flags.FLAGS
-flags.DEFINE_string(
-    name="model",
-    default="experiment/data/model/dim/ckpts/model-640.pt",
-    help="The name of the model checkpoint.",
-)
-flags.DEFINE_string(
-    name="town",
-    default="Town05",
-    help="The name of the town for validation.",
-)
-
-def main(argv):
-  # Debugging purposes.
-  logging.debug(argv)
-  logging.debug(FLAGS)
-
-  # Parses command line arguments.
-  ckpt = FLAGS.model
-  town_name = FLAGS.town
-
-  model = oatomobile.baselines.torch.ImitativeModel()
-  model.load_state_dict(torch.load(ckpt))
-
-  # Initializes a CARLA environment.
-  environment = CARLAEnv(town=town_name)
-  # Makes an initial observation.
-  observation = environment.reset()
-  done = False
-
-  agent = oatomobile.baselines.torch.DIMAgent(
-    environment=environment,
-    model=model,
-    )
-
-  while not done:
-    action = agent.act(observation)
-    observation, reward, done, info = environment.step(action)
-    # Renders interactive display.
-    environment.render(mode="human")
-
-  # # Book-keeping: closes
-  environment.close()
-
-if __name__ == "__main__":
-  flags.mark_flag_as_required("model")
-  flags.mark_flag_as_required("town")
-  app.run(main)
-```
-
+Follow [raycarla.ipynb](https://github.com/xzrderek/RayCarla/blob/main/raycarla.ipynb) notebook to enjoy!
 
 ## Development
 
@@ -126,4 +69,4 @@ if __name__ == "__main__":
     echo "deb [arch=amd64] https://storage.googleapis.com/bazel-apt stable jdk1.8" | sudo tee /etc/apt/sources.list.d/bazel.list
     sudo apt update && sudo apt install bazel
     ```
-10. Follow [experiment/experiments.ipynb](https://github.com/xzrderek/RayCarla/blob/main/experiment/experiments.ipynb) notebook to enjoy!
+## Results
