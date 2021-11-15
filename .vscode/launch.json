@@ -9,7 +9,7 @@
             "type": "python",
             "request": "launch",
             "program": "oatomobile/baselines/rulebased/autopilot/run.py",
-            "args": ["--output_dir=experiment/data/raw", "--town=Town04", "--max_episode_steps=1000"],
+            "args": ["--output_dir=data-oatml/raw", "--town=Town04", "--max_episode_steps=1000"],
             "console": "integratedTerminal"
         },
         {
@@ -17,7 +17,7 @@
             "type": "python",
             "request": "launch",
             "program": "postprocess.py",
-            "args": ["--input_dir=experiment/data/raw/train", "--output_dir=experiment/data/dataset/train"],
+            "args": ["--input_dir=data-oatml/raw/train", "--output_dir=data-oatml/dataset/train"],
             "console": "integratedTerminal"
         },        
         {
@@ -25,7 +25,7 @@
             "type": "python",
             "request": "launch",
             "program": "oatomobile/baselines/rulebased/autopilot/run.py",
-            "args": ["--output_dir=experiment/data/raw", "--town=Town04", "--max_episode_steps=300"],
+            "args": ["--output_dir=data-oatml/raw", "--town=Town04", "--max_episode_steps=300"],
             "console": "integratedTerminal"
         },
         {
@@ -33,7 +33,7 @@
             "type": "python",
             "request": "launch",
             "program": "postprocess.py",
-            "args": ["--input_dir=experiment/data/raw/val", "--output_dir=experiment/data/dataset/val"],
+            "args": ["--input_dir=data-oatml/raw/val", "--output_dir=data-oatml/dataset/val"],
             "console": "integratedTerminal"
         },        
         {
@@ -41,7 +41,7 @@
             "type": "python",
             "request": "launch",
             "program": "oatomobile/baselines/torch/dim/train.py",
-            "args": ["--model=experiment/data/dataset/", "--output_dir=experiment/data/model", "--num_epochs=3"],
+            "args": ["--dataset_dir=data-oatml/processed/", "--output_dir=data-oatml/model", "--num_epochs=3"],
             "console": "integratedTerminal"
         },
         {
@@ -49,7 +49,7 @@
             "type": "python",
             "request": "launch",
             "program": "experiment/dim.py",
-            "args": ["--model=experiment/data/model/dim/ckpts/model-640.pt", "--town=Town03"],
+            "args": ["--model=data-oatml/model/dim/ckpts/model-640.pt", "--town=Town03"],
             "console": "integratedTerminal"
         },
         {
@@ -57,7 +57,7 @@
             "type": "python",
             "request": "launch",
             "program": "oatomobile/baselines/torch/cil/train.py",
-            "args": ["--dataset_dir=experiment/data/dataset", "--output_dir=experiment/data/model", "--num_epochs=3"],
+            "args": ["--dataset_dir=data-oatml/processed", "--output_dir=data-oatml/model", "--num_epochs=3"],
             "console": "integratedTerminal"
         },
         
