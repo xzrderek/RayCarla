@@ -103,21 +103,21 @@ def train_func(config):
         dataset_dir=os.path.join(dataset_dir, "train"),
         modalities=modalities,
     )
+    # TODO: shuffle=True,
     dataloader_train = torch.utils.data.DataLoader(
         dataset_train,
         batch_size=batch_size,
-        shuffle=True,
-        num_workers=5,
+        sampler=DistributedSampler(dataset_train),
     )
     dataset_val = CARLADataset.as_torch(
         dataset_dir=os.path.join(dataset_dir, "val"),
         modalities=modalities,
     )
+    # TODO: shuffle=True,
     dataloader_val = torch.utils.data.DataLoader(
         dataset_val,
         batch_size=batch_size * 5,
-        shuffle=True,
-        num_workers=5,
+        sampler=DistributedSampler(dataset_val),
     )
 
     # Theoretical limit of NLL.

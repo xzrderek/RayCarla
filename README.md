@@ -7,9 +7,10 @@
 RayCarla is a **large scale** autonomous driving research platform. 
 * Carla simulator.
 * Carla on Ray to support distributive simulation (WIP).
-* Imitative Learning on Ray to support distributive deep learning.
+* Imitative Learning on Ray to support distributive deep learning. (mutli model training)
 * Reinforcement Learning on Ray (WIP).
 * Autonomous Driving Interpretability (WIP).
+* Leverage Ray Dataset for pipelining... (Planning).
 
 ## QuickStart
 
