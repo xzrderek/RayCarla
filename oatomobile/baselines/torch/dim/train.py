@@ -101,7 +101,8 @@ def main(argv):
 
   # Determines device, accelerator.
   device = torch.device("cuda" if torch.cuda.is_available() else "cpu")  # pylint: disable=no-member
-
+  device = "cpu"
+  
   # Creates the necessary output directory.
   os.makedirs(output_dir, exist_ok=True)
   log_dir = os.path.join(output_dir, "logs")
@@ -151,7 +152,7 @@ def main(argv):
       dataset_train,
       batch_size=batch_size,
       shuffle=True,
-      num_workers=50,
+      num_workers=5,
   )
   dataset_val = CARLADataset.as_torch(
       dataset_dir=os.path.join(dataset_dir, "val"),
@@ -161,7 +162,7 @@ def main(argv):
       dataset_val,
       batch_size=batch_size * 5,
       shuffle=True,
-      num_workers=50,
+      num_workers=5,
   )
 
   # Theoretical limit of NLL.

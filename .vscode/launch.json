@@ -9,7 +9,7 @@
             "type": "python",
             "request": "launch",
             "program": "oatomobile/baselines/rulebased/autopilot/run.py",
-            "args": ["--output_dir=data-oatml/raw", "--town=Town04", "--max_episode_steps=1000"],
+            "args": ["--output_dir=data/raw", "--town=Town04", "--max_episode_steps=1000"],
             "console": "integratedTerminal"
         },
         {
@@ -17,7 +17,7 @@
             "type": "python",
             "request": "launch",
             "program": "postprocess.py",
-            "args": ["--input_dir=data-oatml/raw/train", "--output_dir=data-oatml/dataset/train"],
+            "args": ["--input_dir=data/raw/train", "--output_dir=data-oatml/dataset/train"],
             "console": "integratedTerminal"
         },        
         {
@@ -25,7 +25,7 @@
             "type": "python",
             "request": "launch",
             "program": "oatomobile/baselines/rulebased/autopilot/run.py",
-            "args": ["--output_dir=data-oatml/raw", "--town=Town04", "--max_episode_steps=300"],
+            "args": ["--output_dir=data/raw", "--town=Town04", "--max_episode_steps=300"],
             "console": "integratedTerminal"
         },
         {
@@ -33,7 +33,7 @@
             "type": "python",
             "request": "launch",
             "program": "postprocess.py",
-            "args": ["--input_dir=data-oatml/raw/val", "--output_dir=data-oatml/dataset/val"],
+            "args": ["--input_dir=data/raw/val", "--output_dir=data-oatml/dataset/val"],
             "console": "integratedTerminal"
         },        
         {

@@ -34,7 +34,7 @@ class MobileNetV2(nn.Module):
     super(MobileNetV2, self).__init__()
 
     self._model = torch.hub.load(
-        github="pytorch/vision:v0.6.0",
+        repo_or_dir="pytorch/vision:v0.6.0",
         model="mobilenet_v2",
         num_classes=num_classes,
     )
