@@ -203,6 +203,7 @@ def train_func(config):
         # Calculates loss (NLL).
         loss = -torch.mean(log_prob - logabsdet, dim=0)  # pylint: disable=no-member
 
+        print(loss)
         return loss
 
     def evaluate_epoch(
@@ -234,9 +235,11 @@ def train_func(config):
         result = evaluate_epoch(model, dataloader_val)
         # write(model, dataloader_val, writer, "val", loss_val, epoch)
 
+        print(result)
+        
         # Checkpoints model weights.
         if epoch % save_model_frequency == 0:
-            train.save_checkpoint(epoch=epoch, model=model)
+            train.save_checkpoint(epoch=epoch, model=model.module)
 
         # train_epoch(train_loader, model, loss_fn, optimizer)
         # result = validate_epoch(validation_loader, model, loss_fn)
@@ -249,10 +252,10 @@ def train_func(config):
 # %%
 smoke_test = True
 address = "127.0.0.1"
-num_workers = 2
+num_workers = 30
 
 def train_carla():
-    trainer = Trainer(TorchConfig(backend="gloo"), num_workers=num_workers)
+    trainer = Trainer(TorchConfig(backend="gloo"), num_workers=num_workers) #, use_gpu=True)
     learning_rate = 1e-3
     config = {"lr": learning_rate}
     trainer.start()
@@ -263,14 +266,14 @@ def train_carla():
                    TBXLoggerCallback()])
     trainer.shutdown()
 
-    print(results)
+    # print(results)
     return results
 
 
 if __name__ == "__main__":
     # Start Ray Cluster
     if smoke_test:
-        ray.init(num_cpus=4) #, local_mode=True)
+        ray.init(num_cpus=32, num_gpus=4) #, local_mode=True)
     else:
         ray.init(address=address)
     # Train carla
