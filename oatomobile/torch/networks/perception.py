@@ -33,11 +33,18 @@ class MobileNetV2(nn.Module):
     """Constructs a MobileNetV2 model."""
     super(MobileNetV2, self).__init__()
 
-    self._model = torch.hub.load(
-        repo_or_dir="pytorch/vision:v0.6.0",
-        model="mobilenet_v2",
-        num_classes=num_classes,
-    )
+    if torch.__version__ == "1.5.1":
+      self._model = torch.hub.load(
+          github="pytorch/vision:v0.6.0",
+          model="mobilenet_v2",
+          num_classes=num_classes,
+      )
+    else:
+       self._model = torch.hub.load(
+          repo_or_dir="pytorch/vision:v0.6.0",
+          model="mobilenet_v2",
+          num_classes=num_classes,
+      )     
 
     # HACK(filangel): enables non-RGB visual features.
     _tmp = self._model.features._modules['0']._modules['0']

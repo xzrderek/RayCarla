@@ -8,10 +8,11 @@ matplotlib
 pygame
 transforms3d
 scikit-image
-torch==1.7.1
-torchvision==0.8.2
+torch
+torchvision
 wget
 tensorboard
 ray[default]
 tensorboardX
 python-dotenv
+

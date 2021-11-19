@@ -41,10 +41,14 @@ from oatomobile.envs.carla import DistanceMetric
 from oatomobile.envs.carla import LaneInvasionsMetric
 from oatomobile.envs.carla import TerminateOnCollisionWrapper
 
+conf = "configs1" # single one
+# conf = "configs" # single one
+
+
 _configs = glob.glob(
     os.path.join(
         os.path.dirname(os.path.abspath(__file__)),
-        "configs",
+        conf,
         "*.json",
     ))
 _TASKS = dict()
@@ -143,9 +147,10 @@ class CARNOVEL(Benchmark):
       try:
         # Initialize environment and fetches origin->destination.
         env = self.load(task_id)
+        env.simulator.reset()
         town = env.simulator._town
-        world = env.simulator.world
-        origin = env.simulator.hero.get_transform()
+        world = env.simulator._world
+        origin = env.simulator._hero.get_transform()
         destination = env.unwrapped.simulator.destination
 
         # Gets global plan.
@@ -205,7 +210,7 @@ class CARNOVEL(Benchmark):
             pad_inches=0,
             transparent=True,
         )
-
+      
       finally:
         env.close()
 

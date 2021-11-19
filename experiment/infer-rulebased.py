@@ -1,12 +1,14 @@
 # Rule-based agents.
 
+import oatomobile
 from oatomobile.envs import CARLAEnv
 from oatomobile.baselines.rulebased import AutopilotAgent
 
-# Initializes a CARLA environment.
-environment = CARLAEnv(town="Town01")
-observation = environment.reset()
+town = "Town01"
 
+# # Initializes a CARLA environment.
+# environment = CARLAEnv(town="Town01")
+# observation = environment.reset()
 
 agent = AutopilotAgent(environment)
 action = agent.act(observation)

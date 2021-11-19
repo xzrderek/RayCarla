@@ -1,4 +1,5 @@
 # Imitation-learners.
+
 import torch
 import oatomobile.baselines.torch
 import oatomobile
@@ -12,7 +13,7 @@ logging.set_verbosity(logging.DEBUG)
 FLAGS = flags.FLAGS
 flags.DEFINE_string(
     name="model",
-    default="experiment/data/model/dim/ckpts/model-640.pt",
+    default="data-oatml/model/dim/ckpts/model-16.pt",
     help="The name of the model checkpoint.",
 )
 flags.DEFINE_string(

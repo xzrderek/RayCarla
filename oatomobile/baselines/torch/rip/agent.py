@@ -103,12 +103,12 @@ class RIPAgent(SetPointAgent):
       # Resets optimizer's gradients.
       optimizer.zero_grad()
       # Operate on `y`-space.
-      y, _ = self._models[0]._forward(x=x, z=zs[0])
+      y, _ = self._models[0]._decoder._forward(x=x, z=zs[0])
       # Iterates over the `K` models and calculates the imitation posterior.
       imitation_posteriors = list()
       for model, z in zip(self._models, zs):
         # Calculates imitation prior.
-        _, log_prob, logabsdet = model._inverse(y=y, z=z)
+        _, log_prob, logabsdet = model._decoder._inverse(y=y, z=z)
         imitation_prior = torch.mean(log_prob - logabsdet)  # pylint: disable=no-member
         # Calculates goal likelihodd.
         goal_likelihood = model._goal_likelihood(
@@ -134,7 +134,7 @@ class RIPAgent(SetPointAgent):
         x_best = x.clone()
         loss_best = loss.clone()
 
-    plan, _ = self._models[0]._forward(x=x_best, z=zs[0])
+    plan, _ = self._models[0]._decoder._forward(x=x_best, z=zs[0])
     ######
     plan = plan.detach().cpu().numpy()[0]  # [T, 2]
 
