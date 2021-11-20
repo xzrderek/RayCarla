@@ -60,6 +60,13 @@
             "args": ["--dataset_dir=data-oatml/processed", "--output_dir=data-oatml/model", "--num_epochs=3"],
             "console": "integratedTerminal"
         },
+        {
+            "name": "Python: rip benchmark",
+            "type": "python",
+            "request": "launch",
+            "program": "experiment/bench-rip.py",
+            "console": "integratedTerminal"
+        },
         
         {
             "name": "Python: Current File",

@@ -100,7 +100,7 @@ class Benchmark(abc.ABC):
 
     # Evaluate on tasks, sequentially -- could be run on parallel too.
     for task_id in tqdm.tqdm(tasks):
-      logging.debug("Start evaluation on task {}".format(task_id))
+      # logging.debug("Start evaluation on task {}".format(task_id))
       task_dir = os.path.join(log_dir, task_id)
       os.makedirs(task_dir, exist_ok=True)
 
@@ -125,3 +125,46 @@ class Benchmark(abc.ABC):
           header=True,
           index=False,
       )
+      
+  # def set_handle_to_self(self, handle_to_self):
+  #       self.handle_to_self = handle_to_self
+
+  # On ray
+  def evaluate_one_on_ray(self, 
+                          log_dir: str, 
+                          task_id: str, 
+                          agent_fn: Callable[..., Agent],
+                          render: bool,
+                          monitor: bool,
+                          *args: Any, 
+                          **kwargs: Any) -> None:
+    ''' On Ray verion'''
+    
+    # Make subfolder
+    task_dir = os.path.join(log_dir, task_id)
+    os.makedirs(task_dir, exist_ok=True)
+
+    # Load environment.
+    env = self.load(task_id)
+    if monitor:
+      video_fname = os.path.join(task_dir, "video.gif")
+      env = MonitorWrapper(env, output_fname=video_fname)
+
+    # Run episode and record metrics.
+    results = EnvironmentLoop(
+        agent_fn=functools.partial(agent_fn, *args, **kwargs),
+        environment=env,
+        metrics=self.metrics,
+        render_mode="human" if render else "none",
+    ).run()
+
+    # Dumps results in a CSV file.
+    results = {uuid: [value] for (uuid, value) in results.items()}
+    pd.DataFrame(results).to_csv(
+        os.path.join(task_dir, "metrics.csv"),
+        header=True,
+        index=False,
+    )
+    return results
+
+      

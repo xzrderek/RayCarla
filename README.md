@@ -27,47 +27,91 @@ Follow [raycarla.ipynb](https://github.com/xzrderek/RayCarla/blob/main/raycarla.
     ```bash
     curl https://pyenv.run | bash
     ```
-3. Add following to ~/.bashrc
+   Add following to ~/.bashrc
     ```bash
     export PATH="$HOME/.pyenv/bin:$PATH"
     eval "$(pyenv init --path)" 
     eval "$(pyenv init -)"
     eval "$(pyenv virtualenv-init -)"
     ```
-4. Restart your shell
+3. Restart your shell
     ```bash
     exec $SHELL
     ```
-5. Install virtualenv & setuptools
+4. Install python 3.7 for taining and 3.5 for simulation
     ```bash
-    pip install virtualenv
-    pip install --upgrade pip setuptools
+    sudo apt-get update; sudo apt-get install make build-essential libssl-dev zlib1g-dev \
+    libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm \
+    libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev
     ```
-6. Clone code and setup venv
+    ```bash
+    pyenv install 3.7.12
+    pyenv install 3.5.10
+    ```
+    *Latest Carla support on 3.7 are work in progress.*
+5. Clone code
     ```bash
     git clone https://github.com/xzrderek/RayCarla
+    ```
+6. Setup virtualenv
+
+    **Simulation venv**
+
+    ```bash
+    pyenv local 3.5.10
+    pip install virtualenv
+    virtualenv ~/venv/3.5
+    ```
+    ```
     cd RayCarla
-    virtualenv venv
-    source venv/bin/activate
+    source ~/venv/3.5/bin/activate
+    pip install --upgrade pip setuptools
+    pip install -r requirements-3.5.txt
     ```
-7. Install Python depdendencies
+    **Training venv**
+
     ```bash
-    pip install -r requirements.txt
+    pyenv local 3.7.12
+    pip install virtualenv
+    virtualenv ~/venv/3.7
     ```
-8. Install Carla 
+    ```
+    cd RayCarla
+    source ~/venv/3.7/bin/activate
+    pip install --upgrade pip setuptools
+    pip install -r requirements-3.7.txt
+    ```
+
+7. Install Carla 
     ```bash
-    export CARLA_ROOT=~/carla
+    source ~/venv/3.5/bin/activate
+    export CARLA_ROOT=~/CARLA
     mkdir -p $CARLA_ROOT
     wget http://carla-assets-internal.s3.amazonaws.com/Releases/Linux/CARLA_0.9.6.tar.gz
     tar -xvzf CARLA_0.9.6.tar.gz -C $CARLA_ROOT
     python -m easy_install $CARLA_ROOT/PythonAPI/carla/dist/carla-0.9.6-py3.5-linux-x86_64.egg 
     ```
-9. Install Bazel (optional)
+    
+8. Install Bazel (optional)
     ```bash
     sudo apt install curl gnupg
     curl -fsSL https://bazel.build/bazel-release.pub.gpg | gpg --dearmor > bazel.gpg
     sudo mv bazel.gpg /etc/apt/trusted.gpg.d/
     echo "deb [arch=amd64] https://storage.googleapis.com/bazel-apt stable jdk1.8" | sudo tee /etc/apt/sources.list.d/bazel.list
     sudo apt update && sudo apt install bazel
+    ```
+9. Training
+    ```
+    source ~/venv/3.7/bin/activate
+    source env.sh
+    nohup ./train.sh
+    ```
+
+10. Benchmark
+    ```
+    source ~/venv/3.5/bin/activate
+    source env.sh
+    nohup python experiment/bench-rip.py
+    and other experiments.
     ```
 ## Results

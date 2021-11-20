@@ -16,3 +16,4 @@
 
 from oatomobile.benchmarks.carnovel.benchmark import carnovel
 from oatomobile.benchmarks.corl2017.benchmark import corl2017
+from oatomobile.benchmarks.carnovel.benchmark import evaluate_on_ray

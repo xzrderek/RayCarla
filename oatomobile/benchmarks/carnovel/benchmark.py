@@ -26,9 +26,15 @@ import functools
 import glob
 import json
 import os
+import functools
+from typing import Any
 from typing import Callable
 from typing import Mapping
+from typing import Optional
 from typing import Sequence
+
+import tqdm
+from absl import logging
 
 from oatomobile.core.benchmark import Benchmark
 from oatomobile.core.rl import Metric
@@ -40,10 +46,11 @@ from oatomobile.envs.carla import CollisionsMetric
 from oatomobile.envs.carla import DistanceMetric
 from oatomobile.envs.carla import LaneInvasionsMetric
 from oatomobile.envs.carla import TerminateOnCollisionWrapper
+from oatomobile.core.agent import Agent
 
-conf = "configs1" # single one
-# conf = "configs" # single one
+import ray
 
+conf = "configs"
 
 _configs = glob.glob(
     os.path.join(
@@ -213,6 +220,47 @@ class CARNOVEL(Benchmark):
       
       finally:
         env.close()
+        
+# Ray version
+def evaluate_on_ray(
+              agent_fn: Callable[..., Agent],
+              log_dir: str,
+              render: bool = False,
+              monitor: bool = False,
+              subtasks_id: Optional[str] = None,
+              *args: Any,
+              **kwargs: Any) -> None:
+  """Runs a full evaluation of an agent on the benchmark.
 
+  Args:
+    agent_fn: The agent's construction function that receives each task.
+    log_dir: The full path to the directory where all the logs are kept.
+    render: If True, it renders the display.
+    monitor: If True, it stores the videos on the screen.
+    subtasks_id: The subset of tasks to run, matches regex.
+  """
+  @ray.remote
+  class CARNOVEL_on_ray(CARNOVEL):
+    pass
+    
+  # Makes sure the output directory exists.
+  os.makedirs(log_dir, exist_ok=True)
 
+  # Keep only the tasks that have `subtasks`.
+  tasks = {task_id: functools.partial(CARLANavEnv, **config)
+          for (task_id, config) in _TASKS.items() }
+  tasks = tasks if subtasks_id is None else [
+      task for task in tasks if subtasks_id in task
+  ]
+
+  results = []
+  # Evaluate on tasks, sequentially -- could be run on parallel too.
+  for task_id in tqdm.tqdm(tasks):
+    logging.debug("Start evaluation on task {}".format(task_id))
+    carnovel = CARNOVEL_on_ray.remote()
+    e = carnovel.evaluate_one_on_ray.remote(log_dir, task_id, agent_fn, render, monitor, args, kwargs)
+    results.append(e)
+  return results
+
+# Non-ray version
 carnovel = CARNOVEL()
