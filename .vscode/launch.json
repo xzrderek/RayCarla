@@ -5,6 +5,14 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal"
+        },
+
+        {
             "name": "Python: autopilot",
             "type": "python",
             "request": "launch",
@@ -41,7 +49,7 @@
             "type": "python",
             "request": "launch",
             "program": "oatomobile/baselines/torch/dim/train.py",
-            "args": ["--dataset_dir=data-oatml/processed/", "--output_dir=data-oatml/model", "--num_epochs=3"],
+            "args": ["--dataset_dir=data-oatml/examples/", "--output_dir=data-oatml/model", "--num_epochs=1", "--log_net=True"],
             "console": "integratedTerminal"
         },
         {
@@ -68,12 +76,5 @@
             "console": "integratedTerminal"
         },
         
-        {
-            "name": "Python: Current File",
-            "type": "python",
-            "request": "launch",
-            "program": "${file}",
-            "console": "integratedTerminal"
-        }
     ]
 }

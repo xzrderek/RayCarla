@@ -1,6 +1,8 @@
 # Imitation-learners.
 
 import torch
+from torch.utils.tensorboard import SummaryWriter
+
 import oatomobile.baselines.torch
 import oatomobile
 from oatomobile.envs import CARLAEnv
@@ -13,7 +15,7 @@ logging.set_verbosity(logging.DEBUG)
 FLAGS = flags.FLAGS
 flags.DEFINE_string(
     name="model",
-    default="data-oatml/model/dim/ckpts/model-16.pt",
+    default="data-oatml/model-200/dim/ckpts/model-16.pt",
     help="The name of the model checkpoint.",
 )
 flags.DEFINE_string(
@@ -24,8 +26,8 @@ flags.DEFINE_string(
 
 def main(argv):
   # Debugging purposes.
-  logging.debug(argv)
-  logging.debug(FLAGS)
+  # logging.debug(argv)
+  # logging.debug(FLAGS)
 
   # Parses command line arguments.
   ckpt = FLAGS.model
@@ -33,6 +35,7 @@ def main(argv):
 
   model = oatomobile.baselines.torch.ImitativeModel()
   model.load_state_dict(torch.load(ckpt))
+  print(model)
 
   # Initializes a CARLA environment.
   environment = CARLAEnv(town=town_name)
@@ -49,7 +52,7 @@ def main(argv):
     action = agent.act(observation)
     observation, reward, done, info = environment.step(action)
     # Renders interactive display.
-    environment.render(mode="human")
+    environment.render(mode="none")
 
   # # Book-keeping: closes
   environment.close()

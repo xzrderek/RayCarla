@@ -80,6 +80,11 @@ flags.DEFINE_bool(
     default=False,
     help="If True it clips the gradients norm to 1.0.",
 )
+flags.DEFINE_bool(
+    name="log_net",
+    default=False,
+    help="Log the model's network.",
+)
 
 
 def main(argv):
@@ -190,13 +195,19 @@ def main(argv):
     )
 
     # Forward pass from the model.
-    z = model._params(
+    z, features_merge = model._params(
         velocity=batch["velocity"],
         visual_features=batch["visual_features"],
         is_at_traffic_light=batch["is_at_traffic_light"],
         traffic_light_state=batch["traffic_light_state"],
     )
     _, log_prob, logabsdet = model._decoder._inverse(y=y, z=z)
+
+    if FLAGS.log_net:
+      print(model)
+      writer.log_net("encoder", model._encoder, batch["visual_features"])
+      writer.log_net("merger", model._merger, features_merge)
+      writer.log_net("decoder", model._decoder, z)
 
     # Calculates loss (NLL).
     loss = -torch.mean(log_prob - logabsdet, dim=0)  # pylint: disable=no-member
@@ -235,7 +246,7 @@ def main(argv):
   ) -> torch.Tensor:
     """Evaluates `model` on a `batch`."""
     # Forward pass from the model.
-    z = model._params(
+    z, _ = model._params(
         velocity=batch["velocity"],
         visual_features=batch["visual_features"],
         is_at_traffic_light=batch["is_at_traffic_light"],

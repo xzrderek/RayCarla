@@ -105,7 +105,7 @@ class ImitativeModel(nn.Module):
     x.requires_grad = True
 
     # The contextual parameters, caches for efficiency.
-    z = self._params(**context)
+    z, _ = self._params(**context)
 
     # Initialises a gradient-based optimiser.
     optimizer = optim.Adam(params=[x], lr=lr)
@@ -203,7 +203,7 @@ class ImitativeModel(nn.Module):
     visual_features = self._encoder(visual_features)
 
     # Merges visual input logits and vector inputs.
-    visual_features = torch.cat(  # pylint: disable=no-member
+    visual_features_merge = torch.cat(  # pylint: disable=no-member
         tensors=[
             visual_features,
             velocity,
@@ -214,9 +214,9 @@ class ImitativeModel(nn.Module):
     )
 
     # The decoders initial state.
-    visual_features = self._merger(visual_features)
+    visual_features = self._merger(visual_features_merge)
 
-    return visual_features
+    return visual_features, visual_features_merge
 
   def transform(
       self,

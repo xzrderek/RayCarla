@@ -90,7 +90,7 @@ class RIPAgent(SetPointAgent):
     x.requires_grad = True
 
     # The contextual parameters, caches for efficiency.
-    zs = [model._params(**observation) for model in self._models]
+    zs, _ = [model._params(**observation) for model in self._models]
 
     # Initialises a gradient-based optimiser.
     optimizer = optim.Adam(params=[x], lr=lr)

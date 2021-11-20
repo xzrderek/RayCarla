@@ -145,7 +145,7 @@ def train_func(config):
         )
 
         # Forward pass from the model.
-        z = model0._params(
+        z, _ = model0._params(
             velocity=batch["velocity"],
             visual_features=batch["visual_features"],
             is_at_traffic_light=batch["is_at_traffic_light"],
@@ -189,7 +189,7 @@ def train_func(config):
     ) -> torch.Tensor:
         """Evaluates `model` on a `batch`."""
         # Forward pass from the model.
-        z = model0._params(
+        z, _ = model0._params(
             velocity=batch["velocity"],
             visual_features=batch["visual_features"],
             is_at_traffic_light=batch["is_at_traffic_light"],

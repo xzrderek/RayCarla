@@ -45,12 +45,29 @@ class TensorBoardLogger:
     # Makes sure output directories exist.
     log_dir_train = os.path.join(log_dir, "train")
     log_dir_val = os.path.join(log_dir, "val")
+    log_dir_encoder = os.path.join(log_dir, "net/encoder")
+    log_dir_merger = os.path.join(log_dir, "net/merger")
+    log_dir_decoder = os.path.join(log_dir, "net/decoder")
     os.makedirs(log_dir_train, exist_ok=True)
     os.makedirs(log_dir_val, exist_ok=True)
+    os.makedirs(log_dir_encoder, exist_ok=True)
+    os.makedirs(log_dir_merger, exist_ok=True)
+    os.makedirs(log_dir_decoder, exist_ok=True)
 
     # Initialises the `TensorBoard` writters.
     self._summary_writter_train = SummaryWriter(log_dir=log_dir_train)
     self._summary_writter_val = SummaryWriter(log_dir=log_dir_val)
+    self._summary_writer_encoder = SummaryWriter(log_dir=log_dir_encoder)
+    self._summary_writer_merger = SummaryWriter(log_dir=log_dir_merger)
+    self._summary_writer_decoder = SummaryWriter(log_dir=log_dir_decoder)
+
+  def log_net(self, model_name, model, input):
+    if model_name == "encoder":
+        self._summary_writer_encoder.add_graph(model, input)
+    elif model_name == "merger":
+        self._summary_writer_merger.add_graph(model, input)
+    else:
+        self._summary_writer_decoder.add_graph(model, input)
 
   def log(
       self,
