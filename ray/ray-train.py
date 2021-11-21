@@ -37,25 +37,28 @@ import ray
 
 # %%
 def train_func(config):
-    dataset_dir = "data-oatml/processed" # "data/examples"
-    output_dir = "data-oatml/models" # "data/models"
-    batch_size = 512
-    num_epochs = 20
-    save_model_frequency = 4
-    num_timesteps_to_keep = 4
-    weight_decay = 0.0
-    clip_gradients = False
-    noise_level = 1e-2
-    
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")  # pylint: disable=no-member
-    device = "cpu"
 
     # breakpoint()
-    
-    lr = config.get("lr", 1e-2)
-    epochs = config.get("epochs", num_epochs)
-    weight_decay = config.get("weight_decay", weight_decay)
 
+    dataset_dir = config.get("dataset_dir", "data/examples")
+    save_model_frequency = config.get("save_model_frequency", 4)
+    num_timesteps_to_keep = config.get("num_timesteps_to_keep", 4)
+    
+    lr = config.get("lr", 1e-3)
+    epochs = config.get("epochs", 20)
+    batch_size = config.get("batch_size", 512)
+    
+    weight_decay = config.get("weight_decay", 0.0)
+    clip_gradients = config.get("clip_gradients", False)
+    noise_level = config.get("noise_level", 1e-2)
+
+    device = torch.device(f"cuda:{train.local_rank()}" if
+                  torch.cuda.is_available() else "cpu")
+    
+    # breakpoint()
+
+    torch.cuda.set_device(device)
+        
     # # Creates the necessary output directory.
     # os.makedirs(output_dir, exist_ok=True)
     # log_dir = os.path.join(output_dir, "logs")
@@ -67,7 +70,8 @@ def train_func(config):
     # Initializes the model and its optimizer.
     output_shape = [num_timesteps_to_keep, 2]
     model0 = ImitativeModel(output_shape=output_shape).to(device)
-    model = DistributedDataParallel(model0)
+    model = DistributedDataParallel(model0, 
+                                    device_ids=[train.local_rank()] if torch.cuda.is_available() else None)
     optimizer = optim.Adam(
         model.parameters(),
         lr=lr,
@@ -108,6 +112,7 @@ def train_func(config):
         dataset_train,
         batch_size=batch_size,
         sampler=DistributedSampler(dataset_train),
+        num_workers=50,
     )
     dataset_val = CARLADataset.as_torch(
         dataset_dir=os.path.join(dataset_dir, "val"),
@@ -235,7 +240,7 @@ def train_func(config):
         result = evaluate_epoch(model, dataloader_val)
         # write(model, dataloader_val, writer, "val", loss_val, epoch)
 
-        print(result)
+        # print(result)
         
         # Checkpoints model weights.
         if epoch % save_model_frequency == 0:
@@ -250,14 +255,11 @@ def train_func(config):
 
 
 # %%
-smoke_test = True
-address = "127.0.0.1"
-num_workers = 4
 
-def train_carla():
-    trainer = Trainer(TorchConfig(backend="gloo"), num_workers=num_workers, use_gpu=True)
-    learning_rate = 1e-3
-    config = {"lr": learning_rate}
+def train_carla(args):
+    trainer = Trainer(backend="torch", num_workers=args.num_workers, use_gpu=args.use_gpu)
+    config = {"dataset_dir" : args.dataset_dir, 
+              "epochs" : args.epochs}
     trainer.start()
     results = trainer.run(
         train_func,
@@ -271,13 +273,69 @@ def train_carla():
 
 
 if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--num_cpus",
+        type=int,
+        default=8,
+        help="Number of CPUs for Ray cluster.")
+    parser.add_argument(
+        "--num_gpus",
+        type=int,
+        default=4,
+        help="Number of GPUs for Ray cluster.")
+    parser.add_argument(
+        "--num_workers",
+        type=int,
+        default=4,
+        help="Number of workers for training.")
+    parser.add_argument(
+        "--cluster",
+        type=bool,
+        default=False,
+        help="Connect to existent cluster.")
+    parser.add_argument(
+        "--address",
+        required=False,
+        default="127.0.0.1",
+        type=str,
+        help="The address of the exsitent Ray cluster.")
+    parser.add_argument(
+        "--dataset_dir",
+        default="data/examples",
+        type=str,
+        help="The dataset directory for training.")
+    parser.add_argument(
+        "--save_model_frequency",
+        type=int,
+        default=4,
+        help="The frequency of saving model.")
+    parser.add_argument(
+        "--epochs",
+        type=int,
+        default=20,
+        help="The number of epochs.")
+    parser.add_argument(
+        "--batch_size",
+        type=int,
+        default=512,
+        help="The batch size of training.")
+    parser.add_argument(
+        "--use_gpu",
+        type=bool,
+        default=True,
+        help="Whether to use GPU.")
+        
+    args, _ = parser.parse_known_args()
     # Start Ray Cluster
-    if smoke_test:
-        ray.init(num_cpus=32, num_gpus=4) #, local_mode=True)
+    if not args.cluster:
+        ray.init(num_cpus=args.num_cpus, num_gpus=args.num_gpus) #, local_mode=True)
     else:
-        ray.init(address=address)
+        ray.init(address=args.address)
     # Train carla
-    train_carla()
+    train_carla(args)
 
 # %%
 
