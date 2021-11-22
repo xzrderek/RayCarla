@@ -41,6 +41,7 @@ def train_func(config):
     # breakpoint()
 
     dataset_dir = config.get("dataset_dir", "data/examples")
+    output_dir = config.get("output_dir", "data/model")
     save_model_frequency = config.get("save_model_frequency", 4)
     num_timesteps_to_keep = config.get("num_timesteps_to_keep", 4)
     
@@ -60,9 +61,9 @@ def train_func(config):
     torch.cuda.set_device(device)
         
     # # Creates the necessary output directory.
-    # os.makedirs(output_dir, exist_ok=True)
-    # log_dir = os.path.join(output_dir, "logs")
-    # os.makedirs(log_dir, exist_ok=True)
+    os.makedirs(output_dir, exist_ok=True)
+    log_dir = os.path.join(output_dir, "logs")
+    os.makedirs(log_dir, exist_ok=True)
     # ckpt_dir = os.path.join(output_dir, "ckpts")
     # os.makedirs(ckpt_dir, exist_ok=True)
 
@@ -77,7 +78,7 @@ def train_func(config):
         lr=lr,
         weight_decay=weight_decay,
     )
-    # writer = TensorBoardLogger(log_dir=log_dir)
+    writer = TensorBoardLogger(log_dir=log_dir)
     # checkpointer = Checkpointer(model=model, ckpt_dir=ckpt_dir)
 
     def transform(batch: Mapping[str, types.Array]) -> Mapping[str, torch.Tensor]:
@@ -123,6 +124,7 @@ def train_func(config):
         dataset_val,
         batch_size=batch_size * 5,
         sampler=DistributedSampler(dataset_val),
+        num_workers=50,
     )
 
     # Theoretical limit of NLL.
@@ -171,6 +173,8 @@ def train_func(config):
         # Performs a gradient descent step.
         optimizer.step()
 
+        print("training: {}".format(loss))
+
         return loss
 
     def train_epoch(
@@ -186,7 +190,10 @@ def train_func(config):
             batch = transform(batch)
             # Performs a gradien-descent step.
             loss += train_step(model, optimizer, batch, clip=clip_gradients)
-        return loss / len(dataloader)
+        loss = loss / len(dataloader)
+        return loss
+        # result = {"model": model.state_dict(), "loss": loss}
+        # return result
 
     def evaluate_step(
         model: ImitativeModel,
@@ -208,7 +215,8 @@ def train_func(config):
         # Calculates loss (NLL).
         loss = -torch.mean(log_prob - logabsdet, dim=0)  # pylint: disable=no-member
 
-        print(loss)
+        print("evaluation: {}".format(loss))
+        
         return loss
 
     def evaluate_epoch(
@@ -225,31 +233,60 @@ def train_func(config):
             with torch.no_grad():
                 loss += evaluate_step(model, batch)
         loss /= len(dataloader)
-        result = {"model": model.state_dict(), "loss": loss}
-        return result
+        return loss
+        # result = {"model": model.state_dict(), "loss": loss}
+        # return result
+
+    def report(
+        model: ImitativeModel,
+        dataloader: torch.utils.data.DataLoader,
+        writer: TensorBoardLogger,
+        split: str,
+        loss: torch.Tensor,
+        epoch: int,
+    ) -> None:
+        """Visualises model performance on `TensorBoard`."""
+        # Gets a sample from the dataset.
+        batch = next(iter(dataloader))
+        # Prepares the batch.
+        batch = transform(batch)
+        # Turns off gradients for model parameters.
+        for params in model.parameters():
+            params.requires_grad = False
+            # Generates predictions.
+        predictions = model(num_steps=20, **batch)
+        # Turns on gradients for model parameters.
+        for params in model.parameters():
+            params.requires_grad = True
+        # Logs on `TensorBoard`.
+        writer.log(
+            split=split,
+            loss=loss.detach().cpu().numpy().item(),
+            overhead_features=batch["visual_features"].detach().cpu().numpy()[:8],
+            predictions=predictions.detach().cpu().numpy()[:8],
+            ground_truth=batch["player_future"].detach().cpu().numpy()[:8],
+            global_step=epoch,
+        )
 
 
     results = []
 
     for epoch in range(epochs):
+        print("Epoch {}".format(epoch))
+
         # Trains model on whole training dataset, and writes on `TensorBoard`.
         loss_train = train_epoch(model, optimizer, dataloader_train)
-        # write(model, dataloader_train, writer, "train", loss_train, epoch)
+        report(model, dataloader_train, writer, "train", loss_train, epoch)
 
         # Evaluates model on whole validation dataset, and writes on `TensorBoard`.
-        result = evaluate_epoch(model, dataloader_val)
-        # write(model, dataloader_val, writer, "val", loss_val, epoch)
-
-        # print(result)
+        loss_val = evaluate_epoch(model, dataloader_val)
+        report(model, dataloader_val, writer, "val", loss_val, epoch)
         
         # Checkpoints model weights.
         if epoch % save_model_frequency == 0:
             train.save_checkpoint(epoch=epoch, model=model.module)
 
-        # train_epoch(train_loader, model, loss_fn, optimizer)
-        # result = validate_epoch(validation_loader, model, loss_fn)
-        train.report(**result)
-        results.append(result)
+        results.append(loss_val)
 
     return results
 
@@ -259,6 +296,7 @@ def train_func(config):
 def train_carla(args):
     trainer = Trainer(backend="torch", num_workers=args.num_workers, use_gpu=args.use_gpu)
     config = {"dataset_dir" : args.dataset_dir, 
+              "output_dir" : args.output_dir,
               "epochs" : args.epochs}
     trainer.start()
     results = trainer.run(
@@ -307,6 +345,11 @@ if __name__ == "__main__":
         default="data/examples",
         type=str,
         help="The dataset directory for training.")
+    parser.add_argument(
+        "--output_dir",
+        default="data/model",
+        type=str,
+        help="The output directory for training.")
     parser.add_argument(
         "--save_model_frequency",
         type=int,

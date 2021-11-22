@@ -8,8 +8,8 @@ RayCarla is a large scale autonomous driving research platform based on:
 
 You need a single machine with GPU and 200G DRAM, or a cluster.
 
-## Prepare Docker Image
-Dockerfile is WIP.
+## Development Environment
+*Dockerfile is WIP.*
 1. Install opengl and cuda
     ```bash
     sudo apt-get install libglu1-mesa-dev freeglut3-dev mesa-common-dev
@@ -99,13 +99,13 @@ Carla autopilot simulation is used to collect data in different towns.
     ```
     source ~/venv/3.7/bin/activate
     source env.sh
-    nohup ./train.sh
+    nohup ./ray-train.sh
     ```
 
 ## Experiments & Benchmark
     ```
     source ~/venv/3.5/bin/activate
     source env.sh
-    nohup python experiment/bench-rip.py
+    nohup ./bench.sh
     and other experiments.
     ```

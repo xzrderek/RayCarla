@@ -1,16 +1,16 @@
-# RayCarla the Large Scale Autonomous Driving Research Platform.
+# RayCarla Large Scale Autonomous Driving Platform
 
   **[QuickStart](#QuickStart)**
 | **[Development](#Development)**
 | **[Results](#Results)**
 
 RayCarla is a **large scale** autonomous driving research platform. 
-* Carla simulator.
-* Carla on Ray to support distributive simulation (WIP).
-* Imitative Learning on Ray to support distributive deep learning. (mutli model training)
+* Simulation: Carla simulator.
+* Imitative Learning on Ray to support distributed deep learning.
 * Reinforcement Learning on Ray (WIP).
-* Autonomous Driving Interpretability (WIP).
-* Leverage Ray Dataset for pipelining... (Planning).
+* Carla on Ray to support distributed simulation (WIP).
+* Ray Serve to support distributed inference (WIP).
+* Leverage Ray Dataset for distributed data ingestion (WIP).
 
 ## QuickStart
 
@@ -19,4 +19,5 @@ Follow [raycarla.ipynb](https://github.com/xzrderek/RayCarla/blob/main/raycarla.
 ## Development
 Please follow [DEVELOPMENT.md](https://github.com/xzrderek/RayCarla/blob/main/DEVELOPMENT.md) to setup environment.
 
-## Results
+## Performance
+The training time has been reduced from 20 hours to 3 hours after Ray enale the training on 8 GPUs in parallel.
