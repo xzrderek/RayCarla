@@ -6,7 +6,7 @@ RayCarla is a large scale autonomous driving research platform based on:
 
 ## Hardware Resources
 
-You need a single machine with GPU and 200G DRAM, or a cluster.
+You need a single machine with GPU and 50G DRAM, or a cluster.
 
 ## Development Environment
 *Dockerfile is WIP.*

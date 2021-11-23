@@ -276,12 +276,13 @@ def train_func(config):
 
         # Trains model on whole training dataset, and writes on `TensorBoard`.
         loss_train = train_epoch(model, optimizer, dataloader_train)
-        report(model, dataloader_train, writer, "train", loss_train, epoch)
 
         # Evaluates model on whole validation dataset, and writes on `TensorBoard`.
         loss_val = evaluate_epoch(model, dataloader_val)
-        report(model, dataloader_val, writer, "val", loss_val, epoch)
         
+        # if train.world_rank() == 0:
+        report(model, dataloader_train, writer, "train", loss_train, epoch)
+        report(model, dataloader_val, writer, "val", loss_val, epoch)
         # Checkpoints model weights.
         if epoch % save_model_frequency == 0:
             train.save_checkpoint(epoch=epoch, model=model.module)

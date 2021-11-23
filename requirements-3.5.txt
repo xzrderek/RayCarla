@@ -15,4 +15,5 @@ tensorboard
 ray[default]
 tensorboardX
 python-dotenv
+tabulate
 

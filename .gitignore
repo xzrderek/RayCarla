@@ -169,4 +169,17 @@ data-oatml/
 
 nohup.out
 CARLA
+
+# pytorch & ray
 runs
+ckpts
+ray-results
+ray/learn/data-cifar/cifar-10-batches-py/batches.meta
+ray/learn/data-cifar/cifar-10-python.tar.gz
+ray/learn/data-cifar/cifar-10-batches-py/data_batch_3
+ray/learn/data-cifar/cifar-10-batches-py/data_batch_1
+ray/learn/data-cifar/cifar-10-batches-py/data_batch_2
+ray/learn/data-cifar/cifar-10-batches-py/data_batch_4
+ray/learn/data-cifar/cifar-10-batches-py/data_batch_5
+ray/learn/data-cifar/cifar-10-batches-py/test_batch
+ray/learn/data-cifar/cifar-10-batches-py/readme.html
